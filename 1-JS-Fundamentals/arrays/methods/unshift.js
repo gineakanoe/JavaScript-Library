@@ -1,0 +1,16 @@
+//! The unshift method adds an element to the beginning of an array
+
+const foods = [
+    {name: "bread", price: 100},
+    {name: "beef", price: 200},
+    {name: "mint", price: 10},
+    {name: "shrimp", price: 15},
+    {name: "ketchup", price: 500},
+    {name: "bell pepper", price: 25},
+];
+
+console.log(`Before: ${foods}`);
+
+foods.unshift('New first item');
+
+console.log(`After: ${foods}`);
