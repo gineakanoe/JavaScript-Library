@@ -1,233 +1,131 @@
 
-const baseURL = 'https://api.nytimes.com/svc/search/v2/articlesearch.json';         //1
-const key = 'UA8FBE0dxZGwxGx2WYy2RjqCwdH63cay';                                     //2
-let url;                                                                            //3
+const baseURL = 'https://api.nytimes.com/svc/search/v2/articlesearch.json';     //NYT API endpoint to collect our data from
+const key = 'UA8FBE0dxZGwxGx2WYy2RjqCwdH63cay';                                 //Personal Key assigned when NYT account and app was created
+let url;                                                                        //Defined 'url' -variable is used for dynamic search url
 
-/*
-    1. declare baseURL of the API.  This is the requires endpoint for the New York Times data.
-    2. This is the key that was assigned to me when app was created in my account.  This is the 'key' variable. It IS user specific.
-    3. 'let url' variable will be used to make a dynamic search url.
-*/
-
-//* REFERENCE TO DOM ELEMENTS
-
+//* REFERENCE TO DOM ELEMENTS - We Define our Variables & connect them to their related class in the index.html
 //SEARCH FORM
-const searchTerm = document.querySelector('.search');
-const startDate = document.querySelector('.start-date');
-const endDate = document.querySelector('.end-date');
-const searchForm = document.querySelector('form');
-//const submitBtn = document.querySelector('.submit');                                   //I don't think we use this term since its within the 'form' tag
+let searchTerm = document.querySelector('.search');
+let startDate = document.querySelector('.start-date');
+let endDate = document.querySelector('.end-date');
+let searchForm = document.querySelector('form');
+//const submitBtn = document.querySelector('.submit');                          // don't use this term since it's part of the Search Form
+//RESULTS NAVIGATION & SECTION
+let nextBtn = document.querySelector('.next');
+let previousBtn = document.querySelector('.prev');
+let section = document.querySelector('section');
+let nav = document.querySelector('nav');
 
-//RESULTS NAVIGATION
-const nextBtn = document.querySelector('.next');
-const previousBtn = document.querySelector('.prev');
+nav.style.display = 'none';                                                     //This makes the 'next' and 'previous' buttons disappear until a search has been initiated
 
-//RESULTS SECTION
-const section = document.querySelector('section');
-const nav = document.querySelector('nav');
+let pageNumber = 0;                                                             //Defines variable and connects it to main page
+//let displayNav = false;                                                       //Ensures navBar is not visible on home page; pageNumber 0.
 
-nav.style.display = 'none';                                                            //This makes the 'next' and 'previous' buttons disappear until a search has been initiated
+//* EVENT LISTENERS - They fire off function when each button is clicked       
+searchForm.addEventListener('submit', submitSearch);                            //function submitSearch()
+nextBtn.addEventListener('click', nextPage);                                    //function nextPage()
+previousBtn.addEventListener('click', previousPage);                            //function previouPage
 
-let pageNumber = 0;
-//let displayNav = false;                                                                 //Ensures navBar is not visible on home page; pageNumber 0.
-
-
-//* EVENT LISTENERS
-
-
-        //1                     //2
-searchForm.addEventListener('submit', submitSearch);    //3.1
-nextBtn.addEventListener('click', nextPage);            //3.2
-previousBtn.addEventListener('click', previousPage);    //3.2
-
-function submitSearch(e) {
-    pageNumber = 0;
-    fetchResults(e);
+function submitSearch(e) {                                                      //(e) -Event Handling Function- allows interaction with bunch of properties (variables) and methods (functions).
+    pageNumber = 0;                                                             //main 1st page is variable [0]
+    fetchResults(e);                                                            //invokes funtion fetchResults when event listener 'submitSearch' is fired
 }
-
-/*
-    1. Want to submit a form with query: "sports", "politics", "weather", etc.
-    2. Want to toggle through results when we click the next or previous button.
-    3.
-            1. With 'searchForm' variable we '.addEventListener' that fires off function 'fetchResults' when 'submit' is called. ('submit search button' fires off on a form not a button)
-            2. When 'next' or 'previous' buttons are 'click'ed, the 'eventListener' fires off function called 'nextPage' and/or 'previousPage'
-*/
-
 
 //* FETCHRESULTS() & ACCESSING A REST API
-
-/*                     //1
-function fetchResults(e){
-    console.log(e);             //2
-    //Assemble the full URL
-    url = baseURL + '?api-key=' + key + '&page' + pageNumber + '&q=' + searchTerm.value;        //3
-    console.log(url);       //4
-}
-*/
-/*
-function nextPage(){
-    console.log("Next button clicked");
-}                                                           //5
-
-function previousPage(){
-    console.log("Previous button clicked");
-}                                                           //5
-*/
-
-/*
-    1. (e) in JS is called an 'event handling function'.  'e' is similar to a variable that allows interaction with object (bunch of properties (variables) and methods (functions)).
-    2. logging event object for learning purposes.
-    3. creating a 'versatile query string'.
-    4. log string so we can see it.
-    5. add basic functions to define 'nextPage' and 'previousPage' and log them.  Without this, the app will get an error.  ..which I was getting until this point.
-*/
-
-//*PREVENTDEFAULT()
-    //This form is not a form we are signing up with or filling out data to be saved in its database, which is its default. (to send a POST request)
-    //This form is to GET data using a request. preventDefault() prevents a POST so we can use form to GET data instead.
-
 function fetchResults(e) {
-    e.preventDefault();
-    url = baseURL + '?api-key=' + key + '&page=' + pageNumber + '&q=' + searchTerm.value + '&fq=document_type:("article")';
+    e.preventDefault();                                                         //default form is to POST, this form is to GET -Preventing the default from happening
+    url = baseURL + '?api-key=' + key + '&page=' + pageNumber + '&q=' + searchTerm.value + '&fq=document_type:("article")';  //creating a 'versatile query string'
 //  console.log("URL:", url);
 
-    //Insert Here
-    if(startDate.value !== '') {
-//      console.log(startDate.value)
-        url += '&begin_date=' + startDate.value;
+    if(startDate.value !== '') {                                                //conditional statement - (!== '') - IF date values, add to url string; IF blank, conditionals are ignored.
+        url += '&begin_date=' + startDate.value;                                //URL string for when data values are entered.
     };
-    
     if(endDate.value !== '') {
         url += '&end_date=' + endDate.value;
     };
-    //End Here
 
-    fetch(url).then(function(result) {
-        //console.log(result); -removed in displayResults
-        return result.json();
-    }).then(function(json) {
-        //console.log(json); -removed in displayResults ...good, 'cause this one was giving me errors
+    fetch(url).then(function(result) {                                          //made fetch request; passed 'url' through; created promise that '.then' returns response of 'result'
+        return result.json();                                                   //promise async returns 'result.json()' to convert result into usable json format
+    }).then(function(json) {                                                    //2nd Promise takes usable json object and returns defined variable 'displayResults(json)'
         displayResults(json);
     });
 }
-/*
-function displayResults(json) {
-    console.log("DisplayResults", json);
-};
-*/
 
-
-    //What we did
-    /*
-    1. make the fetch request
-    2. pass the NYT url
-    3. create a promise '.then' that returns a response called 'result'.
-    4. promise asynchronously returns a function ('result.json()') that converts the result into usable json format.
-    5. Create second promise that has function that takes the 'json' object in.
-    6. log the 'json' object for now....        which is erroring out on me...
-    */
-
-
-//* BEGINNING AND ENDING DATE
-
-    // added end date and start date conditional statements (ifs) within the 'fetchResults' function
-    // the (!== '') means that if there are date values they're added to url string; if blank the expression inside the conditionals are ignored.
-
-
-//* DISPLAY RESULTS
-
-/*
-function displayResults(json) {
-    console.log(json.response.docs);
-}
-*/
-
-/*function displayResults(json) {
-    let articles = json.response.docs;
-    console.log(articles);
-}
-*/
-
-function displayResults(json) {
-    while (section.firstChild) {                           //*Clears out any articles before new search results are added
-        section.removeChild(section.firstChild);
+//*Display the data
+function displayResults(json) {                                                 //turns 'displayResults(json) variable into function that fires when 'submit' button is clicked
+    while (section.firstChild) {                                                //Checks if 'section' element has any child elements in the html file
+        section.removeChild(section.firstChild);                                //If there are child elements; clear them from the 'section' element
     }
-    const articles = json.response.docs;
+    let articles = json.response.docs;                                          //defines 'articles' and where to find them
     
-    if(articles.length === 10) {
+    if(articles.length === 10) {                                                //if array has 10 items(articles)
 //      console.log("No results");
-        nav.style.display = 'block';                            //?shows the nav display if 10 items are in the array
-    } else {
-        nav.style.display = 'none';
+        nav.style.display = 'block';                                            //shows the 'nextPage' and 'previousPage' buttons
+    } else {                                                                    //otherwise
+        nav.style.display = 'none';                                             //do not show the 'nextPage' and 'previousPage' buttons
     }
-        //Display the data
-
-    if(articles.length === 0) {
-        const para = document.createElement('p');
-        para.textContent = 'No results returned.'
+    if(articles.length === 0) {                                                 //if array has 0 items
+        let para = document.createElement('p');
+        para.textContent = 'No results returned.'                               //return no results
         section.appendChild(para);
-      } else {
-        for(let i = 0; i < articles.length; i++) {
-            //console.log(i);                                               //DOM CONTAINER
-            const article = document.createElement('article');               //1
-            const heading = document.createElement('h2');                    //2
-            const link = document.createElement('a');                //!1
-            const img = document.createElement('img');
-            const para1 = document.createElement('p');
-            const para2 = document.createElement('p');
-            const clearfix = document.createElement('div');
+      } else {                                                                  //if array has items
+        for(let i = 0; i < articles.length; i++) {                              //define i variable
 
-            const current = articles[i];                            //!2
-            console.log(current);                                   //!3
+//*DOM CONTAINER - Think of nodes as branches in a family tree of sorts
+            let article = document.createElement('article');                    //create node of 'article' in DOM (article is a child of SECTION in index.html)
+            let heading = document.createElement('h2');                         //create node of heading    - is a 'h2' element
+            let link = document.createElement('a');                             //create node of link       - is an 'a' element
+            let img = document.createElement('img');                            //create node of imag       - is an 'img' element
+            let para1 = document.createElement('p');                            //create node of para1      - is a 'p' element
+            let para2 = document.createElement('p');                            //create node of para2      - is a 'p' element
+            let clearfix = document.createElement('div');                       //create node of clearfix   - is a 'div' element
 
-            link.href = current.web_url;                            //!4
-            link.textContent = current.headline.main;               //!5
+            let current = articles[i];                                          //create 'current' variable; holds data for iteratted current article
+            console.log("Current: ", current);                                  //log to see 'current' data in console
 
-            para1.textContent = current.snippet;
-            para2.textContent = 'Keywords: ';
+            link.href = current.web_url;                                        //attaches href property to 'a' element; 'current.web.url' grabs href for article from json results
+            link.textContent = current.headline.main;                           //attaches 'a' element to current article 'h2' element
 
-            for(let j = 0; j < current.keywords.length; j++) {
-                const span = document.createElement('span');
-                span.textContent = current.keywords[j].value + ' ';
-                para2.appendChild(span);
+            para1.textContent = current.snippet;                                //'textContent' attribute contains current article 'snippet' text
+            para2.textContent = 'Keywords: ';                                   //'textContent' attribute contains current article 'keyword' text
+
+            for(let j = 0; j < current.keywords.length; j++) {                  //for loop iterates through the length of 'keywords' array in the 'current' result object //!Dont forget, this for loop is happening inside another for loop
+                let span = document.createElement('span');                      //create 'span' for each keyword; 'span' element ends when item ends.
+                span.textContent = current.keywords[j].value + ' ';             //'textContent' for span is the value inside the keywords array inside the json object
+                para2.appendChild(span);                                        //add each 'span' to 'para2' node
             }
 
-            if(current.multimedia.length > 0) {
-                img.src = 'http://www.nytimes.com/' + current.multimedia[0].url;
-                img.alt = current.headline.main;
+            if(current.multimedia.length > 0) {                                 //Check json data for if there is a multimedia property (length > 0)
+                img.src = 'http://www.nytimes.com/' + current.multimedia[0].url; //If object, we chain a string with url for the 'html' 'src' value with the 'current' item in multimedia array 
+                img.alt = current.headline.main;                                //Alt for if image isn't available; alt value set to headline
             }
 
-            clearfix.setAttribute('class','clearfix');
+            clearfix.setAttribute('class','clearfix');                          //'setAttribute' method targets '.clearfix' class inside css file
 
-            article.appendChild(heading);                                  //3
-            heading.appendChild(link);                              //!6
-            article.appendChild(img);
-            article.appendChild(para1);
-            article.appendChild(para2);
-            article.appendChild(clearfix); 
-            section.appendChild(article);                                   //4
-//          nav.style.display = 'none';                         //?hides the nav display if less than 10 items are in the array
+            article.appendChild(heading);                                       //heading is child node of article  -'h2' element created in each article
+            heading.appendChild(link);                                          //link is child node of heading     -'a' element created in each heading
+            article.appendChild(img);                                           //img is child node of article      -'img' element created in each article
+            article.appendChild(para1);                                         //para1 is child node of article    -'p' element created in each article 
+            article.appendChild(para2);                                         //para2 is child node of article    -'p' element created in each article
+            article.appendChild(clearfix);                                      //clearfix is child node of article -'div' element created in each article
+            section.appendChild(article);                                       //article is child node of section
         }
     }
 };
 
-/*
-    1. We create an article variable that will create a node in the DOM that is an 'article' element. Remember that  is an HTML5 'article' element.
-    2. We also create a heading variable that creates a node in the DOM that is an 'h2' element.
-    3. We call appendChild() on the article element. This will create a child node on that element. We pass in 'heading' to the appendChild method. This means that there will be an 'h2' element created inside each 'article' element.
-    4. Since we have a 'section' in our original 'html' file, we call the appendChild() method on the 'section' element. We pass in the 'article' to that. This way, the article is a child of 'section', and the 'h2' is a grandchild of 'section'.
-*/
-
-function nextPage(e) {
-    pageNumber++;
-    fetchResults(e);
+//* PAGINATION - Separates print/digital content into seperate pages; auto precess to identify sequential order of pages
+function nextPage(e) {                                                              //define 'nextPage' as a function
+    pageNumber++;                                                                   //increase value of 'pageNumber' variable
+    fetchResults(e);                                                                //reruns 'fetchResults' function
+//  console.log("Page number:", pageNumber);                                        //prints 'pageNumber' variable to see it increment
 };
 
-function previousPage(e) {
-    if(pageNumber > 0) {
-      pageNumber--;
+function previousPage(e) {                                                          //define 'previousPage' as a function
+    if(pageNumber > 0) {                                                            //first page = 0; 'previousPage' will not work on pageNumber 0
+      pageNumber--;                                                                 //if # > 0, we decrement pageNumber by 1
     } else {
-      return;
+      return;                                                                       //if # == 0, return nothing and exit function
     }
-    fetchResults(e);
+    fetchResults(e);                                                                //if # > 0, run 'fetchResults' again
+//  console.log("Page:", pageNumber);                                               //prints 'pageNumber' variable to see it decrement
 };
