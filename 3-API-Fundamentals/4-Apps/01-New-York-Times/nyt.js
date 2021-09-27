@@ -16,34 +16,34 @@ const searchTerm = document.querySelector('.search');
 const startDate = document.querySelector('.start-date');
 const endDate = document.querySelector('.end-date');
 const searchForm = document.querySelector('form');
-const submitBtn = document.querySelector('.submit');                                   //I don't think we use this term since its within the 'form' tag
+//const submitBtn = document.querySelector('.submit');                                   //I don't think we use this term since its within the 'form' tag
 
 //RESULTS NAVIGATION
 const nextBtn = document.querySelector('.next');
 const previousBtn = document.querySelector('.prev');
-const nav = document.querySelector('nav');
-
-    let pageNumber = 0;
-    console.log('PageNumber:', pageNumber);
-    let displayNav = false
 
 //RESULTS SECTION
 const section = document.querySelector('section');
+const nav = document.querySelector('nav');
 
-
-nav.style.display = 'none';                                                             //This makes the 'next' and 'previous' buttons disappear until a search has been initiated
+nav.style.display = 'none';                                                            //This makes the 'next' and 'previous' buttons disappear until a search has been initiated
 
 let pageNumber = 0;
-let displayNav = false;                                                                 //Ensures navBar is not visible on home page; pageNumber 0.
+//let displayNav = false;                                                                 //Ensures navBar is not visible on home page; pageNumber 0.
 
 
 //* EVENT LISTENERS
 
 
         //1                     //2
-searchForm.addEventListener('submit', fetchResults);    //3.1
+searchForm.addEventListener('submit', submitSearch);    //3.1
 nextBtn.addEventListener('click', nextPage);            //3.2
 previousBtn.addEventListener('click', previousPage);    //3.2
+
+function submitSearch(e) {
+    pageNumber = 0;
+    fetchResults(e);
+}
 
 /*
     1. Want to submit a form with query: "sports", "politics", "weather", etc.
@@ -64,7 +64,7 @@ function fetchResults(e){
     console.log(url);       //4
 }
 */
-
+/*
 function nextPage(){
     console.log("Next button clicked");
 }                                                           //5
@@ -72,6 +72,7 @@ function nextPage(){
 function previousPage(){
     console.log("Previous button clicked");
 }                                                           //5
+*/
 
 /*
     1. (e) in JS is called an 'event handling function'.  'e' is similar to a variable that allows interaction with object (bunch of properties (variables) and methods (functions)).
@@ -87,28 +88,27 @@ function previousPage(){
 
 function fetchResults(e) {
     e.preventDefault();
-    url = baseURL + '?api-key=' + key + '%page=' + pageNumber + '&q=' + searchTerm.value;
-    console.log("URL:", url);
+    url = baseURL + '?api-key=' + key + '&page=' + pageNumber + '&q=' + searchTerm.value + '&fq=document_type:("article")';
+//  console.log("URL:", url);
 
     //Insert Here
     if(startDate.value !== '') {
-        console.log(startDate.value)
+//      console.log(startDate.value)
         url += '&begin_date=' + startDate.value;
     };
-
+    
     if(endDate.value !== '') {
         url += '&end_date=' + endDate.value;
     };
     //End Here
 
-    fetch(url)
-        .then(function(result) {
-            //console.log(result); -removed in displayResults
-            return result.json();
-        }) .then(function(json) {
-            //console.log(json); -removed in displayResults ...good, 'cause this one was giving me errors
-                displayResults(json);
-        });
+    fetch(url).then(function(result) {
+        //console.log(result); -removed in displayResults
+        return result.json();
+    }).then(function(json) {
+        //console.log(json); -removed in displayResults ...good, 'cause this one was giving me errors
+        displayResults(json);
+    });
 }
 /*
 function displayResults(json) {
@@ -149,37 +149,47 @@ function displayResults(json) {
 */
 
 function displayResults(json) {
-    while (section.firstChild) {                            //*Clears out any articles before new search results are added
+    while (section.firstChild) {                           //*Clears out any articles before new search results are added
         section.removeChild(section.firstChild);
     }
-    let articles = json.response.docs;
+    const articles = json.response.docs;
     
-    if(articles.length === 0) {
-        console.log("No results");
+    if(articles.length === 10) {
+//      console.log("No results");
         nav.style.display = 'block';                            //?shows the nav display if 10 items are in the array
     } else {
+        nav.style.display = 'none';
+    }
         //Display the data
+
+    if(articles.length === 0) {
+        const para = document.createElement('p');
+        para.textContent = 'No results returned.'
+        section.appendChild(para);
+      } else {
         for(let i = 0; i < articles.length; i++) {
             //console.log(i);                                               //DOM CONTAINER
-            let article = document.createElement('article');                //1
-            let heading = document.createElement('h2');                     //2
-            let link = document.createElement('a');                 //!1
-            let img = document.createElement('img'); 
-            let para = document.createElement('p'); 
-            let clearfix = document.createElement('div')
+            const article = document.createElement('article');               //1
+            const heading = document.createElement('h2');                    //2
+            const link = document.createElement('a');                //!1
+            const img = document.createElement('img');
+            const para1 = document.createElement('p');
+            const para2 = document.createElement('p');
+            const clearfix = document.createElement('div');
 
-            let current = articles[i];                              //!2
-            console.log("Current:", current);                       //!3
+            const current = articles[i];                            //!2
+            console.log(current);                                   //!3
 
             link.href = current.web_url;                            //!4
             link.textContent = current.headline.main;               //!5
 
-            para.textContent = 'Keywords: '; 
+            para1.textContent = current.snippet;
+            para2.textContent = 'Keywords: ';
 
             for(let j = 0; j < current.keywords.length; j++) {
-                let span = document.createElement('span'); 
-                span.textContent += current.keywords[j].value + ' '; 
-                para.appendChild(span);
+                const span = document.createElement('span');
+                span.textContent = current.keywords[j].value + ' ';
+                para2.appendChild(span);
             }
 
             if(current.multimedia.length > 0) {
@@ -187,15 +197,16 @@ function displayResults(json) {
                 img.alt = current.headline.main;
             }
 
-            clearfix.setAttribute('class', 'clearfix');
+            clearfix.setAttribute('class','clearfix');
 
-            article.appendChild(heading);                                   //3
+            article.appendChild(heading);                                  //3
             heading.appendChild(link);                              //!6
             article.appendChild(img);
-            article.appendChild(para);
+            article.appendChild(para1);
+            article.appendChild(para2);
             article.appendChild(clearfix); 
             section.appendChild(article);                                   //4
-            nav.style.display = 'none';                         //?hides the nav display if less than 10 items are in the array
+//          nav.style.display = 'none';                         //?hides the nav display if less than 10 items are in the array
         }
     }
 };
@@ -210,15 +221,13 @@ function displayResults(json) {
 function nextPage(e) {
     pageNumber++;
     fetchResults(e);
-    console.log("Page number:", pageNumber);
 };
 
 function previousPage(e) {
     if(pageNumber > 0) {
-        pageNumber--;
+      pageNumber--;
     } else {
-        return;
+      return;
     }
     fetchResults(e);
-    console.log("Page:", pageNumber);
-}
+};
