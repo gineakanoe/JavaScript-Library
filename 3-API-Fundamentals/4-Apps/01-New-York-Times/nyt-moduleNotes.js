@@ -248,11 +248,4 @@ function previousPage(e) {
                                 |Heading|        |Image|    |Paragraph 1 & 2|     |Div|                                                        
                                     ↓
                                  |Link|
-
-
-
-
-
-
-
 */

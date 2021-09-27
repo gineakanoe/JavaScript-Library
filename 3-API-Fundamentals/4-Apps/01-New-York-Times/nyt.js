@@ -129,3 +129,21 @@ function previousPage(e) {                                                      
     fetchResults(e);                                                            //if # > 0, run 'fetchResults' again
 //  console.log("Page:", pageNumber);                                           //prints 'pageNumber' variable to see it decrement
 };
+
+
+/*
+                                                    NYT APP FAMILY TREE
+                                                            ↓
+                                                        |Document|
+                                                            ↓
+                                                          |Body|
+                                                            ↓
+                                                        |Section|
+                                                            ↓
+                                                        |Article|
+                                    -------------------------------------------------                                           
+                                    ↓               ↓               ↓               ↓
+                                |Heading|        |Image|    |Paragraph 1 & 2|     |Div|                                                        
+                                    ↓
+                                 |Link|
+*/
