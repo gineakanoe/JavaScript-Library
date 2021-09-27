@@ -114,18 +114,18 @@ function displayResults(json) {                                                 
 };
 
 //* PAGINATION - Separates print/digital content into seperate pages; auto precess to identify sequential order of pages
-function nextPage(e) {                                                              //define 'nextPage' as a function
-    pageNumber++;                                                                   //increase value of 'pageNumber' variable
-    fetchResults(e);                                                                //reruns 'fetchResults' function
-//  console.log("Page number:", pageNumber);                                        //prints 'pageNumber' variable to see it increment
+function nextPage(e) {                                                          //define 'nextPage' as a function
+    pageNumber++;                                                               //increase value of 'pageNumber' variable
+    fetchResults(e);                                                            //reruns 'fetchResults' function
+//  console.log("Page number:", pageNumber);                                    //prints 'pageNumber' variable to see it increment
 };
 
-function previousPage(e) {                                                          //define 'previousPage' as a function
-    if(pageNumber > 0) {                                                            //first page = 0; 'previousPage' will not work on pageNumber 0
-      pageNumber--;                                                                 //if # > 0, we decrement pageNumber by 1
+function previousPage(e) {                                                      //define 'previousPage' as a function
+    if(pageNumber > 0) {                                                        //first page = 0; 'previousPage' will not work on pageNumber 0
+      pageNumber--;                                                             //if # > 0, we decrement pageNumber by 1
     } else {
-      return;                                                                       //if # == 0, return nothing and exit function
+      return;                                                                   //if # == 0, return nothing and exit function
     }
-    fetchResults(e);                                                                //if # > 0, run 'fetchResults' again
-//  console.log("Page:", pageNumber);                                               //prints 'pageNumber' variable to see it decrement
+    fetchResults(e);                                                            //if # > 0, run 'fetchResults' again
+//  console.log("Page:", pageNumber);                                           //prints 'pageNumber' variable to see it decrement
 };
