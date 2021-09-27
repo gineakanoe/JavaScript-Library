@@ -1,7 +1,7 @@
 
-const baseURL = 'https://api.nytimes.com/svc/search/v2/articlesearch.json';     //NYT API endpoint to collect our data from
+const baseURL = 'https://api.nytimes.com/svc/search/v2/articlesearch.json';     //NYT API endpoint to collect our data from & getting info from
 const key = 'UA8FBE0dxZGwxGx2WYy2RjqCwdH63cay';                                 //Personal Key assigned when NYT account and app was created
-let url;                                                                        //Defined 'url' -variable is used for dynamic search url
+let url;                                                                        //Defined 'url' -variable is used for dynamic search url - empty string to build URL from
 
 //* REFERENCE TO DOM ELEMENTS - We Define our Variables & connect them to their related class in the index.html
 //SEARCH FORM
@@ -18,7 +18,7 @@ let nav = document.querySelector('nav');
 
 nav.style.display = 'none';                                                     //This makes the 'next' and 'previous' buttons disappear until a search has been initiated
 
-let pageNumber = 0;                                                             //Defines variable and connects it to main page
+let pageNumber = 0;                                                             //Defines variable and connects it to main page; varification
 //let displayNav = false;                                                       //Ensures navBar is not visible on home page; pageNumber 0.
 
 //* EVENT LISTENERS - They fire off function when each button is clicked       
@@ -27,18 +27,18 @@ nextBtn.addEventListener('click', nextPage);                                    
 previousBtn.addEventListener('click', previousPage);                            //function previouPage
 
 function submitSearch(e) {                                                      //(e) -Event Handling Function- allows interaction with bunch of properties (variables) and methods (functions).
-    pageNumber = 0;                                                             //main 1st page is variable [0]
+    pageNumber = 0;                                                             //pageNumber resets to 0 everytime a 'submitSearch' is fired
     fetchResults(e);                                                            //invokes funtion fetchResults when event listener 'submitSearch' is fired
 }
 
 //* FETCHRESULTS() & ACCESSING A REST API
 function fetchResults(e) {
-    e.preventDefault();                                                         //default form is to POST, this form is to GET -Preventing the default from happening
-    url = baseURL + '?api-key=' + key + '&page=' + pageNumber + '&q=' + searchTerm.value + '&fq=document_type:("article")';  //creating a 'versatile query string'
+    e.preventDefault();                                                         //default form method is to POST, this form is to GET -Preventing the default from happening
+    url = baseURL + '?api-key=' + key + '&page=' + pageNumber + '&q=' + searchTerm.value + '&fq=document_type:("article")';  //creating a 'versatile query string' => values inside '' are terms connected to NYT API's search; the other values are terms defined in our javascript.
 //  console.log("URL:", url);
 
     if(startDate.value !== '') {                                                //conditional statement - (!== '') - IF date values, add to url string; IF blank, conditionals are ignored.
-        url += '&begin_date=' + startDate.value;                                //URL string for when data values are entered.
+        url += '&begin_date=' + startDate.value;                                //URL string for when data values are entered. - += adds values to url string
     };
     if(endDate.value !== '') {
         url += '&end_date=' + endDate.value;
@@ -53,7 +53,7 @@ function fetchResults(e) {
 
 //*Display the data
 function displayResults(json) {                                                 //turns 'displayResults(json) variable into function that fires when 'submit' button is clicked
-    while (section.firstChild) {                                                //Checks if 'section' element has any child elements in the html file
+    while (section.firstChild) {                                                //Checks if 'section' element has any child elements in the html file  //!'while' is a loop'
         section.removeChild(section.firstChild);                                //If there are child elements; clear them from the 'section' element
     }
     let articles = json.response.docs;                                          //defines 'articles' and where to find them
@@ -69,7 +69,7 @@ function displayResults(json) {                                                 
         para.textContent = 'No results returned.'                               //return no results
         section.appendChild(para);
       } else {                                                                  //if array has items
-        for(let i = 0; i < articles.length; i++) {                              //define i variable
+        for(let i = 0; i < articles.length; i++) {                              //for loop (i)
 
 //*DOM CONTAINER - Think of nodes as branches in a family tree of sorts
             let article = document.createElement('article');                    //create node of 'article' in DOM (article is a child of SECTION in index.html)
@@ -100,7 +100,7 @@ function displayResults(json) {                                                 
                 img.alt = current.headline.main;                                //Alt for if image isn't available; alt value set to headline
             }
 
-            clearfix.setAttribute('class','clearfix');                          //'setAttribute' method targets '.clearfix' class inside css file
+            clearfix.setAttribute('class','clearfix');                          //'setAttribute' method targets '.clearfix' class inside css file - does nothing?
 
             article.appendChild(heading);                                       //heading is child node of article  -'h2' element created in each article
             heading.appendChild(link);                                          //link is child node of heading     -'a' element created in each heading
@@ -108,7 +108,7 @@ function displayResults(json) {                                                 
             article.appendChild(para1);                                         //para1 is child node of article    -'p' element created in each article 
             article.appendChild(para2);                                         //para2 is child node of article    -'p' element created in each article
             article.appendChild(clearfix);                                      //clearfix is child node of article -'div' element created in each article
-            section.appendChild(article);                                       //article is child node of section
+            section.appendChild(article);                                       //article is child node of section  -makes section for next article
         }
     }
 };
@@ -124,7 +124,7 @@ function previousPage(e) {                                                      
     if(pageNumber > 0) {                                                        //first page = 0; 'previousPage' will not work on pageNumber 0
       pageNumber--;                                                             //if # > 0, we decrement pageNumber by 1
     } else {
-      return;                                                                   //if # == 0, return nothing and exit function
+      return;                                                                   //if # == 0, return nothing and exit/break function
     }
     fetchResults(e);                                                            //if # > 0, run 'fetchResults' again
 //  console.log("Page:", pageNumber);                                           //prints 'pageNumber' variable to see it decrement
