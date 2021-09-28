@@ -12,3 +12,8 @@ const foods = [
 ];
 
 console.log(...foods);
+
+const fullName = ['Isaiah', 'Murray'];      //Array
+
+const copiedName = [...fullName];           //spred operator must be in array square braces '[]'
+console.log(copiedName);                    //looks similar to orig array, but it added spaces between the variable and the square brace [] 
