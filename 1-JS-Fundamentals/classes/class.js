@@ -22,7 +22,7 @@ let Vehicle = class {
 
 
 //! CONSTRUCTOR METHOD
-//* A special methos that helps create and initialize an object created from a class
+//* A special method that helps create and initialize an object created from a class
 //* The constructor needs to be included for us to create new objects (or instances) of our class
 //* the constructor allows us to set properties as well as pass in values for those properties when creatiing a new instance
 
