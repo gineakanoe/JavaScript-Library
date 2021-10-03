@@ -4,6 +4,6 @@
 
 const greetings = ['hi', 'hello', 'welcome', 'howdy'];
 
-console.log(greetings.join());
+console.log(greetings.join());      //hi,hello,welcome,howdy
 
-console.log(greetings.join("! "));
+console.log(greetings.join("! "));  //hi! hello! welcome! howdy
