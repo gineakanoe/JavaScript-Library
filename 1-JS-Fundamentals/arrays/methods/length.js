@@ -10,5 +10,5 @@ const foods = [
 ];
 
 //? Note that you don't need parenthesis on the end of this method(actually a string, but can be used as an array method)
-console.log(foods.length);
+console.log(foods.length);          //6
 
